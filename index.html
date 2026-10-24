@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FILM GAZETTE — A Personal Cinema Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Noto+Serif+SC:wght@400;600;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="paper">
+
+  <!-- ============ 报头 MASTHEAD ============ -->
+  <header class="masthead">
+    <div class="masthead-top">
+      <span id="mastheadDate">—</span>
+      <span id="mastheadIssue">VOL. 01 · NO. 12</span>
+      <span>馆藏 <b id="mastheadCount">0</b> 部</span>
+    </div>
+    <h1 class="masthead-title">FILM GAZETTE</h1>
+    <p class="masthead-sub">A&nbsp;PERSONAL&nbsp;CINEMA&nbsp;JOURNAL</p>
+    <nav class="masthead-nav">
+      <a href="#feature" class="is-active">首页 Front Page</a>
+      <a href="#archive">电影档案 The Archive</a>
+      <a href="#journal">观影手记 Field Notes</a>
+    </nav>
+  </header>
+
+  <!-- 存档异常提示（仅检测到损坏数据时显示） -->
+  <div class="notice-bar" id="noticeBar" hidden>
+    <span class="notice-text mono">⚠ 检测到本地存档异常，已临时切换为示例数据展示，<b>原始数据已备份、不会被覆盖</b>。你可以在浏览器控制台通过 filmGazette.movies.corrupt.v1 导出排查。</span>
+    <button type="button" class="notice-btn mono" id="btnResetData">重置为示例数据</button>
+    <button type="button" class="notice-x" id="btnDismissNotice" aria-label="知道了">×</button>
+  </div>
+
+  <main>
+    <!-- ============ 本期主打 FEATURE ============ -->
+    <section class="feature" id="feature" aria-label="本期主打">
+      <!-- 由 main.js 渲染 -->
+    </section>
+
+    <!-- ============ 我的电影档案 ARCHIVE ============ -->
+    <section class="archive" id="archive">
+      <header class="section-head">
+        <div>
+          <p class="sec-en">SECTION B — THE ARCHIVE</p>
+          <h2>我的电影档案</h2>
+        </div>
+        <p class="sec-note">按观影状态归档 · 最近看过 / 待看清单 / 我的精选</p>
+        <button class="btn-record btn-add" id="btnAddMovie" type="button">＋ 新增电影</button>
+      </header>
+      <div class="archive-grid" id="archiveGrid">
+        <!-- 由 main.js 渲染三栏 -->
+      </div>
+    </section>
+
+    <!-- ============ 观影手记 JOURNAL ============ -->
+    <section class="journal" id="journal">
+      <header class="section-head">
+        <div>
+          <p class="sec-en">SECTION C — FIELD NOTES</p>
+          <h2>观影手记</h2>
+        </div>
+        <p class="sec-note">短评与台词摘抄</p>
+      </header>
+      <div class="journal-list" id="journalList">
+        <!-- 由 main.js 渲染 -->
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ 页脚 COLOPHON ============ -->
+  <footer class="colophon">
+    <p class="colophon-rule">· · ·</p>
+    <p class="colophon-title">FILM GAZETTE</p>
+    <p class="colophon-meta">EST. 2024 · 一份私人电影刊物 · 手工排版，不定期发行</p>
+    <p class="colophon-quote">“我们记住的不是电影，而是看电影时的自己。”</p>
+  </footer>
+
+</div>
+
+<!-- ============ 弹窗：新增 / 修订电影 ============ -->
+<div class="modal" id="movieModal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="movieModalTitle">
+    <header class="modal-head">
+      <p class="sec-en" id="movieModalKicker">NEW ENTRY · 收录新片</p>
+      <h3 id="movieModalTitle">新增电影</h3>
+      <button class="modal-close" type="button" data-close aria-label="关闭">×</button>
+    </header>
+    <form id="movieForm" novalidate>
+      <input type="hidden" name="movieId">
+      <p class="form-error" id="formError" hidden></p>
+      <div class="form-grid">
+        <label class="field field--full">
+          <span class="field-label">电影名称 *</span>
+          <input name="titleCN" type="text" autocomplete="off">
+        </label>
+        <label class="field field--full">
+          <span class="field-label">外文原名</span>
+          <input name="titleEN" type="text" autocomplete="off">
+        </label>
+        <label class="field">
+          <span class="field-label">上映年份</span>
+          <input name="year" type="number" min="1888" max="2100" step="1">
+        </label>
+        <label class="field">
+          <span class="field-label">导演</span>
+          <input name="director" type="text" autocomplete="off">
+        </label>
+        <fieldset class="field field--full status-field">
+          <span class="field-label">观影状态</span>
+          <label class="radio"><input type="radio" name="status" value="已看" checked> 已看</label>
+          <label class="radio"><input type="radio" name="status" value="想看"> 想看</label>
+        </fieldset>
+        <label class="field">
+          <span class="field-label">个人评分（0–10）</span>
+          <input name="score" type="number" min="0" max="10" step="0.5">
+        </label>
+        <label class="field" id="watchDateField">
+          <span class="field-label">观影日期</span>
+          <input name="watchDate" type="date">
+        </label>
+        <label class="field field--full">
+          <span class="field-label">短评</span>
+          <textarea name="note" rows="3"></textarea>
+        </label>
+        <label class="field field--full">
+          <span class="field-label">喜欢的台词</span>
+          <textarea name="quote" rows="2"></textarea>
+        </label>
+        <label class="field field--full">
+          <span class="field-label">台词出处（可选）</span>
+          <input name="quoteFrom" type="text" autocomplete="off">
+        </label>
+        <label class="check field--full">
+          <input type="checkbox" name="favorite"> 收录进「我的精选」栏目
+        </label>
+      </div>
+      <footer class="modal-foot">
+        <button type="button" class="btn-ghost" data-close>取消</button>
+        <button type="submit" class="btn-record">保存收录</button>
+      </footer>
+    </form>
+  </div>
+</div>
+
+<!-- ============ 弹窗：二次确认 ============ -->
+<div class="modal" id="confirmModal" hidden>
+  <div class="modal-card modal-card--sm" role="alertdialog" aria-modal="true">
+    <header class="modal-head">
+      <p class="sec-en">RETRACTION · 撤稿确认</p>
+      <h3 id="confirmTitle">确认操作</h3>
+    </header>
+    <p class="confirm-text" id="confirmText"></p>
+    <footer class="modal-foot">
+      <button type="button" class="btn-ghost" data-close>再想想</button>
+      <button type="button" class="btn-record btn-danger" id="confirmYes">确认执行</button>
+    </footer>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/store.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
